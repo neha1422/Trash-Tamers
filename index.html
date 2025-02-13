@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trash Tamer</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <video autoplay muted loop id="bg-video">
+        <source src="bgvid.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+     
+    <nav class="navbar">
+        <div class="logo">TrashTamer</div>
+        <ul class="nav-links">
+            <li><a href="#" onclick="goToSlide('landing')">Home</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#logout">Log Out</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <section id="home" class="slide active">
+            <h1>Welcome to Trash Tamer</h1>
+            <p>Segregate smartly, sustain efficiently.</p>
+            <button onclick="goToSlide('login')">Get Started</button>
+        </section>
+        
+        <section id="login" class="slide">
+            <h2>Login</h2>
+            <form onsubmit="event.preventDefault(); goToSlide('landing');">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" onclick="goToSlide('signup')">Sign up</a></p>
+        </section>
+        <section id="signup" class="slide">
+            <h2>Sign Up</h2>
+            <form onsubmit="event.preventDefault(); goToSlide('landing');">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="#" onclick="goToSlide('login')">Login</a></p>
+        </section>
+        
+        <section id="landing" class="slide">
+            <h2>Welcome to Trash Tamer</h2>
+            <p>Choose a feature:</p>
+            <button onclick="goToSlide('garbage_scanner')">Garbage Scanning</button>
+            <button onclick="goToSlide('stickers')">Biodegradable QR Stickers</button>
+            <button onclick="goToSlide('worker_login')">Login as a Municipal Worker</button>
+        </section>
+
+
+        <section id="garbage_scanner" class="slide">
+            <h2>Garbage Scanning</h2>
+            <div> Want to know which bin your waste belongs to</div>
+            <div>SCAN NOW!</div>
+            <button type="button" onclick="init()">Start</button>
+            <div id="webcam-container"></div>
+            <div id="label-container"></div>
+        </section>
+
+
+        <section id="stickers" class="slide">
+            <h2>QR Code Scanner</h2>
+            <div class="scanner-container">
+                <video id="qr-video" width="300" height="300"></video>
+                <img id="captured-image" width="300" height="300" style="display:none; margin-left:20px;" />
+            </div>
+            <div class="buttons">
+                <button onclick="startQRScanner()">Start QR Scanner</button>
+                <button onclick="captureImage()">Capture</button>
+            </div>
+            <p id="qr-result"></p>
+        </section>
+        
+        <section id="worker_login" class="slide">
+            <h2>Municipal Worker Login</h2>
+            <form>
+                <input type="email" placeholder="Work Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </section>
+    </div>
+    
+    <script>
+        function goToSlide(slideId) {
+            document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+            document.getElementById(slideId).classList.add('active');
+        }
+        document.addEventListener("DOMContentLoaded", () => goToSlide('home'));
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script>
+        const URL = "https://teachablemachine.withgoogle.com/models/RP1Q8G3ON/";
+        let model, webcam, labelContainer, maxPredictions;
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+            
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+            
+            webcam = new tmImage.Webcam(200, 200, true);
+            await webcam.setup();
+            await webcam.play();
+            
+
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            
+            labelContainer = document.getElementById("label-container");
+            labelContainer.innerHTML = ""; 
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.appendChild(document.createElement("div"));
+            }
+            window.requestAnimationFrame(loop);
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            
+
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className;
+                const confidence = (prediction[i].probability * 100).toFixed(2);
+                
+                const label = labelContainer.childNodes[i];
+                label.innerHTML = `<span class="prediction-label">${classPrediction}: ${confidence}%</span>`;
+                
+                let progressBar = label.querySelector(".progress-bar");
+                if (!progressBar) {
+                    progressBar = document.createElement("div");
+                    progressBar.classList.add("progress-bar");
+                    label.appendChild(progressBar);
+                }
+                progressBar.style.width = `${confidence}%`;
+                
+                progressBar.classList.toggle("high-confidence", confidence >= 75);
+                progressBar.classList.toggle("medium-confidence", confidence >= 50 && confidence < 75);
+                progressBar.classList.toggle("low-confidence", confidence < 50);
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+
+    <script>
+
+        function startQRScanner() {
+            const video = document.getElementById('qr-video');
+            const resultElement = document.getElementById('qr-result');
+            
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.setAttribute('playsinline', true);
+                    video.play();
+                    scanQRCode(video, resultElement);
+                })
+                .catch(err => console.error('Error accessing camera:', err));
+        }
+        
+        function scanQRCode(video, resultElement) {
+    const qrScanner = new Html5Qrcode("qr-video");
+    qrScanner.start(
+        { facingMode: "environment" },
+        {
+            fps: 10,
+            qrbox: 250
+        },
+        result => {
+            resultElement.innerHTML = `Scanned QR Code: ${result}`;
+            qrScanner.stop();
+        },
+        err => console.warn(err)
+    );
+}
+
+
+    function captureImage() {
+        const video = document.getElementById('qr-video');
+        const image = document.getElementById('captured-image');
+        const canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = 300;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        image.src = canvas.toDataURL('image/png');
+        image.style.display = 'block';
+    }
+    </script>
+</body> 
+</html>

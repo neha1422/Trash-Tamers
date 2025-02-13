@@ -1,0 +1,254 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f5f0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    background-image: linear-gradient(135deg, #A8DADC, #457B9D);
+}
+
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+
+/* Navigation Bar */
+.navbar {
+    width: 100%;
+    background-color: #006400;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navbar ul li {
+    margin: 0 15px;
+}
+
+.navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar ul li a:hover {
+    color: #FFD700;
+}
+
+/* Main Container */
+.container {
+    text-align: center;
+    width: 80%;
+    max-width: 800px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    margin-top: 80px;
+}
+
+/* Headings */
+h1, h2 {
+    color: #006400;
+    font-family: 'Roboto', sans-serif;
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Slides */
+.slide {
+    display: none;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease-in-out;
+    margin-bottom: 20px;
+}
+
+.slide.active {
+    display: block;
+}
+
+/* Buttons */
+button {
+    background-color: #228B22;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 10px;
+    font-size: 18px;
+    transition: background-color 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #006400;
+}
+
+#captured-image {
+    border: 5px solid #228B22;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.scanner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Input Fields */
+input {
+    width: calc(100% - 30px);
+    padding: 14px;
+    margin: 12px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease-in-out;
+    display: block;
+}
+
+input:focus {
+    border-color: #228B22;
+    outline: none;
+}
+
+/* Links */
+a {
+    color: #228B22;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Webcam & Label Container */
+#webcam-container {
+    margin: 40px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 5px solid #228B22;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    max-width: 100%;
+    height: auto;
+}
+
+#webcam-container canvas {
+    width: 100%;
+    height: auto;
+}
+
+#label-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    flex-direction: column;
+    align-items: center;
+}
+
+#label-container div {
+    margin: 5px;
+    padding: 10px;
+    background-color: rgba(34, 139, 34, 0.2);
+    border-radius: 5px;
+    color: #333;
+    font-size: 18px;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out;
+}
+
+#label-container div:hover {
+    background-color: rgba(34, 139, 34, 0.4);
+}
+
+/* Progress Bar */
+.progress-bar {
+    height: 5px;
+    margin-top: 8px;
+    border-radius: 3px;
+    background-color: #ddd;
+}
+
+.high-confidence {
+    background-color: #32CD32;
+}
+
+.medium-confidence {
+    background-color: #FFD700;
+}
+
+.low-confidence {
+    background-color: #1E90FF;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    input {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .navbar ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .navbar ul li {
+        margin: 10px 0;
+    }
+}
